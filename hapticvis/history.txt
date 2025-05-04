@@ -1,0 +1,18 @@
+/ess
+hapticvis::add_identity_trials
+ess::hapticvis::add_identity_trials
+::hapticvis::add_identity_trials
+package require haptic
+::haptic::add_identity_trials
+pwd
+cd systems
+cd ess
+cd hapticvis
+cd db
+glob 8
+glob *
+::haptic::add_identity_trials shape_db trial_db_4_4
+::haptic::add_identity_trials shape_db trial_db_4_4 4 4 5
+pwd
+set errorInfo
+ess::load_system hapticvis

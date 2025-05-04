@@ -1,0 +1,100 @@
+set f [ess::file_suggest]; ess::file_open $f
+ess::file_close
+set f [ess::file_suggest]; ess::file_open $f
+ess::file_close
+set errorInfo
+set f [ess::file_suggest]; ess::file_open $f
+ess::file_close
+set errorInfo
+set f [ess::file_suggest]; ess::file_open $f
+ess::file_close
+set f [ess::file_suggest]; ess::file_open $f
+ess::file_close
+set f [ess::file_suggest]; ess::file_open $f
+ess::file_close
+set f [ess::file_suggest]; ess::file_open $f
+ess::file_close
+set f [ess::file_suggest]; ess::file_open $f
+ess::file_close
+set f [ess::file_suggest]; ess::file_open $f
+ess::file_close
+set f [ess::file_suggest]; ess::file_open $f
+set f
+ess::file_close
+set f [ess::file_suggest]; ess::file_open $f
+ess::file_close
+/ess
+set f [ess::file_suggest]; ess::file_open $f
+ess::file_close
+set f [ess::file_suggest]; ess::file_open $f
+ess::file_close
+set f [ess::file_suggest]; ess::file_open $f
+/ess
+set f [ess::file_suggest]; ess::file_open $f
+ess::file_close
+set f [ess::file_suggest]; ess::file_open $f
+ess::file_close
+ess::load_system hapticvis
+ess::reset
+ess::start
+dl_local a [dl_shuffle [dl_fromto 0 100000]]
+package require dslog
+dslog::readESS
+cd /Users/sheinb
+cd mtp
+dlp_test
+clearwin
+flushwin
+clearwin; dlp_test
+add_cgraph
+add_cgraph plot1
+package require dslog
+dslog::readEss
+dslog::read
+dslog::readESS
+set g [dslog::readESS /Volumes/qpcs/data/essdat/human_hapticvis_identify-haptic_constrained_locked_2504041641.ess]
+dslog::readESS
+set g [dslog::readESS  /Volumes/qpcs/data/essdat/human_hapticvis_identify-haptic_constrained_locked_2504041641.ess]
+dslog::readESS /Volumes/qpcs/data/essdat/human_hapticvis_identify-haptic_constrained_locked_2504041641.ess]
+dslog::readESS
+pwd
+cd src/dserv/systems/ess
+cd hapticvis/identify
+source identify_process.tcl
+hapticvis::identify::load_data
+hapticvis::identify::load_data /Users/sheinb/tmp/human_hapticvis-identify-haptic_constrained_locked_2503311547.ess
+package require ess
+source /Users/sheinb/src/dserv/lib/ess-1.0.tm
+glob /Users/sheinb/src/dserv/lib/*
+source /Users/sheinb/src/dserv/lib/ess-2.0.tm
+source /Users/sheinb/src/dserv/lib/juicer-1.0.tm
+source /Users/sheinb/src/dserv/lib/ess-2.0.tm
+::tcl::tm::path add /Users/sheinb/src/dserv/lib/
+package require ess
+hapticvis::identify::load_data /Users/sheinb/tmp/human_hapticvis-identify-haptic_constrained_locked_2503311547.ess
+dg_delete human_hapticvis-identify-haptic_constrained_locked_2503311547
+hapticvis::identify::load_data /Users/sheinb/tmp/human_hapticvis-identify-haptic_constrained_locked_2503311547.ess
+set errorInfo
+info proc ess::evt_id
+info body ess::evt_id
+dg_dir
+dg_view human_hapticvis-identify-haptic_constrained_locked_2503311547
+dl_tcllist human_hapticvis-identify-haptic_constrained_locked_2503311547:e_pre
+dl_tcllist human_hapticvis-identify-haptic_constrained_locked_2503311547:e_types:0
+dl_tcllist human_hapticvis-identify-haptic_constrained_locked_2503311547:e_pre:0
+dl_datatype human_hapticvis-identify-haptic_constrained_locked_2503311547:e_pre:0 
+dl_datatype human_hapticvis-identify-haptic_constrained_locked_2503311547:e_pre:0:0
+dl_tcllist human_hapticvis-identify-haptic_constrained_locked_2503311547:e_pre:0:0
+dl_tcllist human_hapticvis-identify-haptic_constrained_locked_2503311547:e_pre:0:1
+dl_tcllist human_hapticvis-identify-haptic_constrained_locked_2503311547:e_pre:1:0
+dl_local a [dl_llist [dl_llist "1 2 3"] [dl_llist "2. 3. 4"]
+dl_local a [dl_llist [dl_llist "1 2 3"] [dl_llist "2. 3. 4"]]
+dl_tcllist $a
+dl_local a human_hapticvis-identify-haptic_constrained_locked_2503311547:e_pre
+dl_tcllist $a
+dl_dump $a
+dl_dump $a:0
+dl_local a [dl_llist [dl_llist "1 2 3"] [dl_llist]]
+dl_tcllist $a
+dl_tcllist [dl_llist [dl_llist "1 2 3 4 "] [dl_llist] [dl_llist [dl_slist now is the time]]]
+exit

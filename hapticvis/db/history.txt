@@ -1,0 +1,100 @@
+package require dslog
+set g [dslog::readESS /tmp/$f.ess]
+dl_length $g:<ds>grasp/sensor0/vals:0
+dg_tclListnames $g
+dservGet grasp/sensor0/vals
+set f [ess::file_suggest]
+ess::file_open $f
+ess::file_close
+set g [dslog::readESS /tmp/$f.ess]
+dg_tclListnames $g
+ess::file_open $f
+set f [ess::file_suggest]
+ess::file_open $f
+ess::file_close
+set f [ess::file_suggest]
+ess::file_open $f
+set f [ess::file_suggest]
+ess::file_open $f
+ess::file_close
+package require dslog; set g [dslog::readESS /tmp/$f.ess]
+set g [dslog::readESS /tmp/$f.ess]
+dg_tclListnames $g
+set f [ess::file_suggest]
+ess::file_open $f
+ess::file_close
+package require dslog; set g [dslog::readESS /tmp/$f.ess]
+dg_tclListnames $g
+set f [ess::file_suggest]
+ess::file_open $f
+ess::file_close
+package require dslog; set g [dslog::readESS /tmp/$f.ess]
+dg_tclListnames $g
+set f [ess::file_suggest]
+ess::file_open $f
+ess::file_close
+package require dslog; set g [dslog::readESS /tmp/$f.ess]
+dg_tclListnames $g
+set f [ess::file_suggest]
+ess::file_open $f
+ess::file_close
+package require dslog; set g [dslog::readESS /tmp/$f.ess]
+dg_tclListnames $g
+set f [ess::file_suggest]
+ess::file_open $f
+ess::file_close
+package require dslog; set g [dslog::readESS /tmp/$f.ess]
+dg_tclListnames $g
+set f [ess::file_suggest]
+ess::file_open $f
+ess::file_close
+package require dslog; set g [dslog::readESS /tmp/$f.ess]
+dg_tclListnames $g
+set f [ess::file_suggest]
+ess::file_open $f
+ess::file_close
+package require dslog; set g [dslog::readESS /tmp/$f.ess]
+dg_tclListnames $g
+ess::file_open $f
+set f [ess::file_suggest]
+ess::file_open $f
+ess::file_close
+package require dslog; set g [dslog::readESS /tmp/$f.ess]
+dg_tclListnames $g
+dservGet grasp/sensor0/vals
+set f [ess::file_suggest]
+ess::file_open $f
+dservGet grasp/sensor0/vals
+ess::file_close
+package require dslog; set g [dslog::readESS /tmp/$f.ess]
+dg_tclListnames $g
+set f [ess::file_suggest]; ess::file_open $f
+set ess::evt_ptype_ids
+/ess
+set ess::evt_ptype_ids
+evtPut 19 0 [now] 4 "1 200"
+/ds
+/ess
+set errorInfo
+/dserv
+dservGet gpio/input/26
+dservGet joystick/value
+joystick4Read
+dservGet joystick/value
+dservGet gpio/input/26
+dservGet joystick/value
+joystick4Read
+dservGet gpio/input/26
+set errorInfo
+dservAddMatch
+format %08b 240
+format %08b [expr ~0x40 & 0xff]
+expr 01111111b
+scan 10011 %b
+scan 10011000 %b
+scan 10111000 %b
+dlp_test
+pwd
+cd systems/ess/hapticvis/db
+set g [dg_read trial_db_6_3]
+dg_view $g
