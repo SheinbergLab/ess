@@ -74,6 +74,19 @@ proc create_circle { r g b { a 1 } } {
     return $c
 }
 
+proc create_cue { id } {
+    set mg [metagroup]
+    set cue_color ".2 1 1"
+    for { set i 0 } { $i < [dl_length stimdg:cued_choices:$id] } { incr i } {
+	set s [create_circle {*}$cue_color 0.8]
+	translateObj $s {*}[dl_tcllist stimdg:cued_choices:$id:$i]
+	scaleObj $s [expr 0.9*[dl_get stimdg:choice_scale $id]]
+	metagroupAdd $mg $s
+    }
+    setVisible $mg 0
+    return $mg
+}
+
 proc create_noise { id } {
     set noise_mg [metagroup]
     for { set i 0 } { $i < [dl_length stimdg:noise_elements:$id] } { incr i } {
@@ -101,7 +114,8 @@ proc nexttrial { id } {
     set trialtype [dl_get stimdg:trial_type $id]
     set scale [dl_get stimdg:choice_scale $id]
     set nchoices [dl_get stimdg:n_choices $id]
-
+    set is_cued [dl_get stimdg:is_cued $id]
+    
     # add the visual sample for VV trials, no visual sample for HV trials
     if { $trialtype == "visual" } {
         set ::sample [metagroup]
@@ -132,6 +146,11 @@ proc nexttrial { id } {
     glistAddObject $mg 0
     setVisible $mg 0
     set ::choice_array $mg
+
+    if { $is_cued } {
+	set ::cue [create_cue $id]
+	glistAddObject $::cue 0
+    }
 
     # gray selecting circle
     set s [create_circle .9 .9 .9 0.9]
@@ -226,6 +245,16 @@ proc sample_off {} {
     redraw
 }
 
+proc cue_on {} {
+    setVisible $::cue 1
+    redraw
+}
+	     
+proc cue_off {} {
+    setVisible $::cue 0
+    redraw
+}
+	     
 proc choices_on {} {
     setVisible $::choice_array 1
     redraw

@@ -310,6 +310,14 @@ namespace eval hapticvis::transfer {
 	    }
 	}
 
+	$s add_method cue_on {} {
+	    rmtSend "!cue_on"
+	}
+
+	$s add_method cue_off {} {
+	    rmtSend "!cue_off"
+	}
+
 	$s add_method get_choices { n } {
 	    if { $n == 4 } {
 		return "1 3 5 7"

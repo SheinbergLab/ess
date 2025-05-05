@@ -40,6 +40,19 @@ namespace eval hapticvis::transfer {
 	post_response_time 500
     }
 
+    variable params_visual_cued {
+	interblock_time 500
+	pre_stim_time 100
+	cue_delay 250
+	cue_duration 6250
+	sample_delay 1500
+	sample_duration 5000
+	choice_duration 30000
+	choice_delay 0
+	stim_duration 30000
+	post_response_time 500
+    }
+    
     # variant description
 
     set subject_ids [dl_tcllist [dl_fromto 0 30]]
