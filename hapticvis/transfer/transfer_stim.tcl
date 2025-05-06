@@ -87,19 +87,18 @@ proc create_cue { id } {
     return $mg
 }
 
-proc create_noise { id } {
-    set noise_mg [metagroup]
-    for { set i 0 } { $i < [dl_length stimdg:noise_elements:$id] } { incr i } {
-        lassign [dl_tcllist [dl_get stimdg:noise_elements:$id $i]] x y r
-        set c [create_circle 0 0 0]
-        translateObj $c $x $y
-        scaleObj $c $r
-        metagroupAdd $noise_mg $c
+proc add_noise { obj id } {
+    if { [dl_length stimdg:noise_elements:$id] } {
+	dl_local centers [dl_collapse [dl_choose stimdg:noise_elements:$id [dl_llist "0 1"]]]
+	dl_local radii [dl_collapse [dl_choose stimdg:noise_elements:$id [dl_llist 2]]]
+	shaderObjSetUniform $obj maskColor "0 0 0 0"
+	shaderObjSetUniform $obj circlePos [dl_tcllist $centers]
+	shaderObjSetUniform $obj radii [dl_tcllist $radii]
+	shaderObjSetUniform $obj nCircles [dl_length $radii]
     }
-    return $noise_mg
 }
 
-proc rotate_noise { angle } { rotateObj $::noise $angle 0 0 -1; redraw }
+proc rotate_noise { angle } { shaderObjSetUniform $::shape rotationAngle $angle }
     
 proc nexttrial { id } {
     resetObjList         ;# unload existing objects
@@ -107,7 +106,7 @@ proc nexttrial { id } {
     shaderDeleteAll;         ;# reset any shader objects
     glistInit 2
 
-    set shader_file image    ;# shader file is image.glsl
+    set shader_file holes    ;# shader file is holes.glsl
     set shader [shaderBuild $shader_file]
 
     set ::current_trial $id
@@ -119,14 +118,11 @@ proc nexttrial { id } {
     # add the visual sample for VV trials, no visual sample for HV trials
     if { $trialtype == "visual" } {
         set ::sample [metagroup]
-        set shape [create_shape $shader $id]
-        metagroupAdd $::sample $shape
-
-        # add noise to metagroup if specified
-        if { [dl_length stimdg:noise_elements:$id] } {
-            set ::noise [create_noise $id]
-            metagroupAdd $::sample $::noise
-        }
+	
+        set ::shape [create_shape $shader $id]
+	add_noise $::shape $id
+	
+        metagroupAdd $::sample $::shape
 
         glistAddObject $::sample 0
         setVisible $::sample 0
