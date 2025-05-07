@@ -93,7 +93,7 @@ proc do_rotate { o { increment 1 } } {
     shaderObjSetUniform $o rotationAngle $r
 }
 
-proc create_mask { shader id } {
+proc create_mask { shader id color } {
     if { [dl_length stimdg:noise_elements:$id] } {
 	set mscale 1.5
 	set scale [expr {$mscale*[dl_get stimdg:shape_scale $id]}]
@@ -106,7 +106,7 @@ proc create_mask { shader id } {
 	dl_local radii [dl_collapse [dl_choose stimdg:noise_elements:$id [dl_llist 2]]]
 	dl_local radii [dl_div $radii $mscale]
 	
-	shaderObjSetUniform $obj maskColor "0.4 0.8 0.4 1"
+	shaderObjSetUniform $obj maskColor "$color 1"
 	shaderObjSetUniform $obj circlePos [dl_tcllist $centers]
 	shaderObjSetUniform $obj radii [dl_tcllist $radii]
 	shaderObjSetUniform $obj nCircles [dl_length $radii]
@@ -118,7 +118,7 @@ proc create_mask { shader id } {
     return $obj
 }
 
-proc rotate_noise { angle } { shaderObjSetUniform $::shape rotationAngle $angle; redraw }
+proc rotate_noise { angle } { rotateObj $::mask $angle 0 0 -1; redraw }
     
 proc nexttrial { id } {
     resetObjList         ;# unload existing objects
@@ -137,13 +137,15 @@ proc nexttrial { id } {
     set scale [dl_get stimdg:choice_scale $id]
     set nchoices [dl_get stimdg:n_choices $id]
     set is_cued [dl_get stimdg:is_cued $id]
+
+    set mask_color "0.1 0.1 0.15"
     
     # add the visual sample for VV trials, no visual sample for HV trials
     if { $trialtype == "visual" } {
         set ::sample [metagroup]
 
         set ::shape [create_shape $shader $id]
-        set ::mask  [create_mask $mask_shader $id]
+        set ::mask  [create_mask $mask_shader $id $mask_color]
 	
         metagroupAdd $::sample $::shape
 	metagroupAdd $::sample $::mask
