@@ -108,7 +108,7 @@ proc add_noise { obj id } {
     }
 }
 
-proc rotate_noise { angle } { shaderObjSetUniform $::shape rotationAngle $angle }
+proc rotate_noise { angle } { shaderObjSetUniform $::shape rotationAngle $angle; redraw }
     
 proc nexttrial { id } {
     resetObjList         ;# unload existing objects
@@ -140,7 +140,6 @@ proc nexttrial { id } {
 
         glistAddObject $::sample 0
         setVisible $::sample 0
-	glistSetDynamic 0 1
     } else {
 
     }
