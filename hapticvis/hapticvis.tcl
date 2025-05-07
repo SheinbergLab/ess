@@ -184,7 +184,7 @@ namespace eval hapticvis {
 		    return choices_off
 		}
 	    }
-	    if { [timerExpired $cue_timer] } {
+	    if { $have_cue && [timerExpired $cue_timer] } {
 		if { $cue_up == 0 } {
 		    return cue_on
 		} elseif { $cue_up == 1 } {

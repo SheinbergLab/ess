@@ -161,6 +161,7 @@ namespace eval hapticvis::transfer {
 		set trial_type [dl_get stimdg:trial_type $cur_id]
 		set shape_id [dl_get stimdg:shape_id $cur_id]
 		set shape_angle [dl_get stimdg:shape_rot_deg_cw $cur_id]
+		set have_cue [dl_get stimdg:is_cued $cur_id]
 		rmtSend "nexttrial $cur_id"
 
 		set correct -1
