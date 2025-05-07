@@ -93,19 +93,29 @@ proc do_rotate { o { increment 1 } } {
     shaderObjSetUniform $o rotationAngle $r
 }
 
-proc add_noise { obj id } {
+proc create_mask { shader id } {
     if { [dl_length stimdg:noise_elements:$id] } {
+	set mscale 1.5
+	set scale [expr {$mscale*[dl_get stimdg:shape_scale $id]}]
+
+	set obj [shaderObj $shader]
+	scaleObj $obj $scale
+
 	dl_local centers [dl_collapse [dl_choose stimdg:noise_elements:$id [dl_llist "0 1"]]]
+	dl_local centers [dl_div $centers $mscale]
 	dl_local radii [dl_collapse [dl_choose stimdg:noise_elements:$id [dl_llist 2]]]
-	shaderObjSetUniform $obj maskColor "0.0 0.0 0.0 1"
+	dl_local radii [dl_div $radii $mscale]
+	
+	shaderObjSetUniform $obj maskColor "0.4 0.8 0.4 1"
 	shaderObjSetUniform $obj circlePos [dl_tcllist $centers]
 	shaderObjSetUniform $obj radii [dl_tcllist $radii]
 	shaderObjSetUniform $obj nCircles [dl_length $radii]
+	shaderObjSetUniform $obj isCircle 1
+	shaderObjSetUniform $obj invert 0
     } else {
-	shaderObjSetUniform $obj maskColor "0 0 0 0"
-	shaderObjSetUniform $obj nCircles 0
-	shaderObjSetUniform $obj invert 1
+	set obj [nullObj]
     }
+    return $obj
 }
 
 proc rotate_noise { angle } { shaderObjSetUniform $::shape rotationAngle $angle; redraw }
@@ -116,8 +126,11 @@ proc nexttrial { id } {
     shaderDeleteAll;         ;# reset any shader objects
     glistInit 2
 
-    set shader_file holes    ;# shader file is holes.glsl
+    set shader_file image
     set shader [shaderBuild $shader_file]
+
+    set mask_shader_file holemask
+    set mask_shader [shaderBuild $mask_shader_file]
 
     set ::current_trial $id
     set trialtype [dl_get stimdg:trial_type $id]
@@ -129,14 +142,11 @@ proc nexttrial { id } {
     if { $trialtype == "visual" } {
         set ::sample [metagroup]
 
-	set bg [create_circle 0 0 0 1]
-	scaleObj $bg [expr {1.42*[dl_get stimdg:shape_scale $id]}]
-	
         set ::shape [create_shape $shader $id]
-	add_noise $::shape $id
-
-	metagroupAdd $::sample $bg
+        set ::mask  [create_mask $mask_shader $id]
+	
         metagroupAdd $::sample $::shape
+	metagroupAdd $::sample $::mask
 
         glistAddObject $::sample 0
         setVisible $::sample 0

@@ -414,9 +414,9 @@ namespace eval hapticvis::transfer {
 		 dl_local noise_elements \
 		     [dl_replicate [dl_llist [dl_llist]] $n_obs]
 	     } elseif { $noise_type == "circles"} {
-		 set nelements 20
-		 set njprop 0.1; # jitter proportion
-		 set minradius 0.06;
+		 set nelements 15
+		 set njprop 0.05; # jitter proportion
+		 set minradius 0.1;
 		 set total_elements [expr {${n_obs}*$nelements}]
 		 dl_local xs [dl_sub [dl_urand $total_elements] 0.5]
 		 dl_local ys [dl_sub [dl_urand $total_elements] 0.5]
@@ -424,7 +424,8 @@ namespace eval hapticvis::transfer {
 				  [dl_mult [dl_urand $total_elements] $njprop]]
 		 dl_local noise_elements \
 		     [dl_reshape [dl_transpose \
-				      [dl_llist $xs $ys $rs]] $n_obs $nelements]
+				      [dl_llist $xs $ys $rs]] \
+			  $n_obs $nelements]
 	     }
 	     
 	     dl_set stimdg:stimtype     [dl_fromto 0 $n_obs]
