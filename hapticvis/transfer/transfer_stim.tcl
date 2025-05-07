@@ -87,14 +87,24 @@ proc create_cue { id } {
     return $mg
 }
 
+proc do_rotate { o { increment 1 } } {
+    set r [shaderObjSetUniform $o rotationAngle]
+    set r [expr {$r+$increment}]
+    shaderObjSetUniform $o rotationAngle $r
+}
+
 proc add_noise { obj id } {
     if { [dl_length stimdg:noise_elements:$id] } {
 	dl_local centers [dl_collapse [dl_choose stimdg:noise_elements:$id [dl_llist "0 1"]]]
 	dl_local radii [dl_collapse [dl_choose stimdg:noise_elements:$id [dl_llist 2]]]
-	shaderObjSetUniform $obj maskColor "0 0 0 0"
+	shaderObjSetUniform $obj maskColor "0.0 0.0 0.0 1"
 	shaderObjSetUniform $obj circlePos [dl_tcllist $centers]
 	shaderObjSetUniform $obj radii [dl_tcllist $radii]
 	shaderObjSetUniform $obj nCircles [dl_length $radii]
+    } else {
+	shaderObjSetUniform $obj maskColor "0 0 0 0"
+	shaderObjSetUniform $obj nCircles 0
+	shaderObjSetUniform $obj invert 1
     }
 }
 
@@ -118,14 +128,19 @@ proc nexttrial { id } {
     # add the visual sample for VV trials, no visual sample for HV trials
     if { $trialtype == "visual" } {
         set ::sample [metagroup]
+
+	set bg [create_circle 0 0 0 1]
+	scaleObj $bg [expr {1.42*[dl_get stimdg:shape_scale $id]}]
 	
         set ::shape [create_shape $shader $id]
 	add_noise $::shape $id
-	
+
+	metagroupAdd $::sample $bg
         metagroupAdd $::sample $::shape
 
         glistAddObject $::sample 0
         setVisible $::sample 0
+	glistSetDynamic 0 1
     } else {
 
     }
