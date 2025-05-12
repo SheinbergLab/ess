@@ -202,6 +202,15 @@ namespace eval hapticvis::transfer {
 			 $use_dist $dist_choice_center]	  
 		dl_set stimdg:cue_valid [dl_not $use_dist]
 		dl_set stimdg:cued_choices $cue_center
+
+		# now add left right choice options
+		set lr_ecc 6.0
+		set lr_scale 1.75
+		dl_set stimdg:lr_choice_centers [dl_replicate \
+						     [dl_llist [dl_llist \
+								    [dl_flist -$lr_ecc 0] \
+								    [dl_flist $lr_ecc 0]]] $n]
+		dl_set stimdg:lr_choice_scale [dl_repeat $lr_scale $n]
 	    }
 	
 	$s add_method setup_visual_transfer { subject_id subject_set n_per_set \
@@ -295,6 +304,8 @@ namespace eval hapticvis::transfer {
 	     dl_set stimdg:n_choices        [dl_ilist]
 	     dl_set stimdg:choice_centers   [dl_llist]
 	     dl_set stimdg:choice_scale     [dl_flist]
+	     dl_set stimdg:lr_choice_centers [dl_llist]
+	     dl_set stimdg:lr_choice_scale  [dl_flist]
 	     dl_set stimdg:is_cued          [dl_ilist]
 	     dl_set stimdg:cue_valid        [dl_ilist]
 	     dl_set stimdg:cued_choices     [dl_llist]
@@ -454,6 +465,9 @@ namespace eval hapticvis::transfer {
 	     dl_set stimdg:n_choices      [dl_repeat $n_choices $n_obs]
 	     dl_set stimdg:choice_centers [dl_repeat $choice_centers $n_obs]
 	     dl_set stimdg:choice_scale   [dl_repeat $choice_scale $n_obs]
+	     dl_set stimdg:lr_choice_centers [dl_repeat [dl_llist [dl_llist]] \
+						  $n_obs]
+	     dl_set stimdg:lr_choice_scale [dl_zeros $n_obs.]
 	     dl_set stimdg:is_cued        [dl_repeat $is_cued $n_obs]
 	     dl_set stimdg:cue_valid      [dl_repeat [dl_ilist $cue_valid] \
 					       $n_obs]

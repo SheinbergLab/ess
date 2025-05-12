@@ -143,16 +143,32 @@ namespace eval hapticvis::transfer {
 		set follow_pattern  \
 		    [expr {![string equal [dl_get stimdg:follow_pattern $cur_id] 0]}]
 
-		for { set i 0 } { $i < $n_choices } { incr i } {
-		    set slot [lindex $choices $i]
-		    # set these touching_response knows where choices are
-		    set choice_x [dl_get stimdg:choice_centers:$cur_id:$i 0]
-		    set choice_y [dl_get stimdg:choice_centers:$cur_id:$i 1]
-		    set choice_r [dl_get stimdg:choice_scale $cur_id]
-		    if { $use_touchscreen } {
-			::ess::touch_region_off $slot
-			::ess::touch_win_set $slot \
-			    $choice_x $choice_y $choice_r 0
+		set have_cue [dl_get stimdg:is_cued $cur_id]
+		set cue_valid [dl_get stimdg:cue_valid $cur_id]
+		
+		if { $have_cue } {
+		    foreach i "0 1" {
+			set choice_x [dl_get stimdg:lr_choice_centers:$cur_id:$i 0]
+			set choice_y [dl_get stimdg:lr_choice_centers:$cur_id:$i 1]
+			set choice_r [dl_get stimdg:lr_choice_scale $cur_id]
+			if { $use_touchscreen } {
+			    ::ess::touch_region_off $i
+			    ::ess::touch_win_set $i \
+				$choice_x $choice_y $choice_r 0
+			}
+		    }
+		} else {
+		    for { set i 0 } { $i < $n_choices } { incr i } {
+			set slot [lindex $choices $i]
+			# set these touching_response knows where choices are
+			set choice_x [dl_get stimdg:choice_centers:$cur_id:$i 0]
+			set choice_y [dl_get stimdg:choice_centers:$cur_id:$i 1]
+			set choice_r [dl_get stimdg:choice_scale $cur_id]
+			if { $use_touchscreen } {
+			    ::ess::touch_region_off $slot
+			    ::ess::touch_win_set $slot \
+				$choice_x $choice_y $choice_r 0
+			}
 		    }
 		}
 
@@ -161,7 +177,7 @@ namespace eval hapticvis::transfer {
 		set trial_type [dl_get stimdg:trial_type $cur_id]
 		set shape_id [dl_get stimdg:shape_id $cur_id]
 		set shape_angle [dl_get stimdg:shape_rot_deg_cw $cur_id]
-		set have_cue [dl_get stimdg:is_cued $cur_id]
+
 		rmtSend "nexttrial $cur_id"
 
 		set correct -1
@@ -331,17 +347,25 @@ namespace eval hapticvis::transfer {
 	
 	$s add_method choices_on {} {
 	    rmtSend "!choices_on"
-	    set cs [my get_choices $n_choices]
 	    if { $use_touchscreen } {
-		foreach i $cs { ::ess::touch_region_on $i }
+		if { $have_cue } {
+		    foreach i "0 1" { ::ess::touch_region_on $i }
+		} else {
+		    set cs [my get_choices $n_choices]
+		    foreach i $cs { ::ess::touch_region_on $i }
+		}
 	    }
 	}
 
 	$s add_method choices_off {} {
 	    rmtSend "!choices_off"
-	    set cs [my get_choices $n_choices]
 	    if { $use_touchscreen } {
-		foreach i $cs { ::ess::touch_region_off $i }
+		if { $have_cue } {
+		    foreach i "0 1" { ::ess::touch_region_off $i }
+		} else {
+		    set cs [my get_choices $n_choices]
+		    foreach i $cs { ::ess::touch_region_off $i }
+		}
 	    }
 	    rmtSend "!feedback_off all"
 	}
@@ -374,7 +398,7 @@ namespace eval hapticvis::transfer {
 	    ::ess::evt_put DECIDE SELECT [now] $p
 	    rmtSend "highlight_response $p"
 	}
-	
+
 	$s add_method responded {} {
 	    # if no response to report, return -1
 	    set r -1
@@ -489,6 +513,68 @@ namespace eval hapticvis::transfer {
 	    return $r
 	}
 
+	# did subject respond left or right
+	$s add_method responded_lr {} {
+	    # if no response to report, return -1
+	    set r -1
+	    set made_selection 0
+	    set updated_position 0
+
+	    if { $use_joystick } {
+		set joy_position [dservGet ess/joystick/value]
+		if { $joy_position != 8 && $joy_position != 4 && $joy_position != 0 } {
+		    if { [dservExists ess/joystick/position] } {
+			if { [dservGet ess/joystick/position] != 0 } {
+			    dservSet ess/joystick/position 0
+			    return -2
+			} else {
+			    return -1
+			}
+		    } else {
+			dservSet ess/joystick/position 0
+			return -2
+		    }
+		}
+		# note which position has been activated
+		if { [dservExists ess/joystick/position] } {
+		    set cur_position [dservGet ess/joystick/position]
+		} else {
+		    set cur_position -1
+		}
+		if { $joy_position != $cur_position } {
+		    dservSet ess/joystick/position $joy_position
+		    set updated_position 1
+		}
+		
+		# only if the button is pressed should we count as response
+		if { [dservGet ess/joystick/button] } {
+		    set made_selection 1
+		} else {
+		    if { $updated_position } { set r -2 } { set r -1 }
+		}
+	    }
+	    if { $use_touchscreen && $r == -1 } {
+		foreach w "0 1" {
+		    if { [::ess::touch_in_win $w] } {
+			set r $w
+			break
+		    }
+		}
+		if { $r != -1 } {
+		    set made_selection 1
+		}
+	    }
+	    
+	    if { $made_selection } {
+		rmtSend "cue_off; choices_off; feedback_off all"
+		# r should be 0 for cue_valid == 1, 1 for cue_valid == 0
+		set correct [expr {$r == (1-$cue_valid)}]
+		set r 0
+	    }
+	    
+	    return $r
+	}
+	
 	######################################################################
 	#                         Data Processing                            #
 	#                                                                    #

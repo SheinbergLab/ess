@@ -74,6 +74,19 @@ proc create_circle { r g b { a 1 } } {
     return $c
 }
 
+proc create_open_circle { r g b { a 1 } } {
+    global pi
+    set n 36
+    set step [expr 2.*$::pi/$n]
+    set c [polygon]
+    dl_local x [dl_mult 0.5 [dl_cos [dl_fromto 0 [expr 2*$pi] $step]]]
+    dl_local y [dl_mult 0.5 [dl_sin [dl_fromto 0 [expr 2*$pi] $step]]]
+    polyverts $c $x $y
+    polytype $c line_loop
+    polycolor $c $r $g $b $a
+    return $c
+}
+
 proc create_cue { id } {
     set mg [metagroup]
     set cue_color ".2 1 1"
@@ -160,11 +173,27 @@ proc nexttrial { id } {
     set mg [metagroup]
 
     for { set i 0 } { $i < $nchoices } { incr i } {
-        set s [create_circle 1 1 1 0.3]
+        if { !$is_cued } {
+	    set s [create_circle 1 1 1 0.3]
+	} else {
+	    set s [create_open_circle 1 1 1 0.3]
+	}
         translateObj $s {*}[dl_tcllist stimdg:choice_centers:$id:$i]
         scaleObj $s [dl_get stimdg:choice_scale $id]
         metagroupAdd $mg $s
     }
+
+    # add lr choices if we are using cueing
+    set nlrchoices [dl_length stimdg:lr_choice_centers:$id]
+    if { $is_cued } {
+	for { set i 0 } { $i < $nlrchoices } { incr i } {
+	    set s [create_circle 1 1 1 0.3]
+	    translateObj $s {*}[dl_tcllist stimdg:lr_choice_centers:$id:$i]
+	    scaleObj $s [dl_get stimdg:lr_choice_scale $id]
+	    metagroupAdd $mg $s
+	}
+    }
+    
     glistAddObject $mg 0
     setVisible $mg 0
     set ::choice_array $mg

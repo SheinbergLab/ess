@@ -25,6 +25,7 @@ namespace eval hapticvis {
 	$sys add_param stim_duration    10000      time int
 
 	$sys add_param have_cue             0      variable bool
+	$sys add_param cue_valid            0      variable bool
 	$sys add_param cue_delay            0      time int
 	$sys add_param cue_duration         0      time int
 
@@ -197,7 +198,11 @@ namespace eval hapticvis {
 
 	    # allow responses after sample has appeared
 	    if { $sample_on_time >= 0 } {
-		set resp [my responded]
+		if { !$cue_up } {
+		    set resp [my responded]
+		} else {
+		    set resp [my responded_lr]
+		}
 		if { $resp >= 0 } { return response }
 		if { $resp == -2 } { return highlight_response }
 	    }
@@ -498,6 +503,7 @@ namespace eval hapticvis {
 	$sys add_method finale {} { print finale }
 	
 	$sys add_method responded {} { return 0 }
+	$sys add_method responded_lr {} { return 0 }
 	$sys add_method response_correct {} { return 1 }
 	
 	
